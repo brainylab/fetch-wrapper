@@ -1,0 +1,53 @@
+name: CI - Publish Fetch Wrapper
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  publish-grp:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: NodeJs Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Set package registry GRP
+        run: npm config set registry https://npm.pkg.github.com
+
+      - name: Github package registry authentication
+        run: npm set //npm.pkg.github.com/:_authToken ${{ secrets.PUBLISH_TOKEN_GRP }}
+
+      - name: Publish Packages on GRP
+        run: npm publish --provenance --access public
+
+  publish-npm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    needs: [publish-grp]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: NodeJs Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Npm registry authentication
+        run: npm set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish Packages on NPM
+        run: npm publish --provenance --access public
+

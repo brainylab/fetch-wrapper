@@ -1,0 +1,26 @@
+{
+  "name": "@brainylab/fetch-wrapper",
+  "version": "0.1.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./index.d.ts",
+  "scripts": {
+    "build": "tsup ./src/index.ts --dts --format esm,cjs --env.NODE_ENV production"
+  },
+  "keywords": ["fetch", "wrapper", "http"],
+  "author": {
+    "name": "André Felipe Schulle",
+    "email": "dev@brainylab.com.br"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brainylab/eslint-config.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@brainylab/eslint-config": "^1.0.14",
+    "@types/node": "^20.10.7",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  }
+}
