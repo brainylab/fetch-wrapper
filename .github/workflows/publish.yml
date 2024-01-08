@@ -1,9 +1,9 @@
-name: CI - Publish Fetch Wrapper
+name: CI - Publish Package
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   publish-grp:
@@ -21,6 +21,12 @@ jobs:
         with:
           node-version: 18
 
+      - name: Install Packages
+        run: pnpm install --frozen-lockfile
+      
+      - name: Build Packages
+        run: pnpm run build
+
       - name: Set package registry GRP
         run: npm config set registry https://npm.pkg.github.com
 
@@ -28,7 +34,7 @@ jobs:
         run: npm set //npm.pkg.github.com/:_authToken ${{ secrets.PUBLISH_TOKEN_GRP }}
 
       - name: Publish Packages on GRP
-        run: npm publish --provenance --access public
+        run: cd dist && npm publish --provenance --access public
 
   publish-npm:
     runs-on: ubuntu-latest
@@ -44,10 +50,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+      
+      - name: Install Packages
+        run: pnpm install --frozen-lockfile
+      
+      - name: Build Packages
+        run: pnpm run build
 
       - name: Npm registry authentication
         run: npm set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
 
       - name: Publish Packages on NPM
-        run: npm publish --provenance --access public
+        run: cd dist && npm publish --provenance --access public
 
