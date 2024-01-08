@@ -1,8 +1,8 @@
 {
   "name": "@brainylab/fetch-wrapper",
-  "version": "0.1.1",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "version": "0.1.2",
+  "main": "./index.js",
+  "module": "./index.mjs",
   "types": "./index.d.ts",
   "scripts": {
     "build:compile": "tsup ./src/index.ts --dts --format esm,cjs --env.NODE_ENV production",
