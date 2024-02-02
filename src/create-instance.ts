@@ -1,8 +1,8 @@
-import { FetchWrapper } from './fetch-wrapper';
+import { FetchWrapper, FetchWrapperDefaults } from './fetch-wrapper';
 
 export type FetchWrapperProps = {
   baseUrl?: string;
-  defaultConfig?: RequestInit;
+  defaultConfig?: FetchWrapperDefaults;
 };
 
 export function create(defaultConfig: FetchWrapperProps) {

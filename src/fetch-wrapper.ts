@@ -2,6 +2,10 @@ import { FetchWrapperProps } from './create-instance';
 import { HttpRequestError } from './http-error';
 import { mergeConfigs } from './utils/merge-configs';
 
+export type FetchWrapperDefaults = {
+  headers: HeadersInit & { Authorization?: string };
+};
+
 type FetchWrapperResponse<T> = {
   status: number;
   statusText: string;
@@ -31,7 +35,7 @@ interface FetchMethods {
 
 export class FetchWrapper implements FetchMethods {
   private url: string;
-  private defaultConfig: RequestInit = {
+  public defaults: FetchWrapperDefaults = {
     headers: {
       Accept: 'application/json',
       'Content-type': 'application/json; charset=UTF-8',
@@ -45,7 +49,10 @@ export class FetchWrapper implements FetchMethods {
     this.url = baseUrl;
 
     if (defaultConfig) {
-      this.defaultConfig = mergeConfigs(this.defaultConfig, defaultConfig);
+      this.defaults = mergeConfigs(
+        this.defaults,
+        defaultConfig,
+      ) as FetchWrapperDefaults;
     }
   }
 
@@ -54,11 +61,23 @@ export class FetchWrapper implements FetchMethods {
     init?: RequestInit,
   ): Promise<FetchWrapperResponse<T>> {
     const url = new URL(path, this.url);
-    const response = await fetch(url, { ...this.defaultConfig, ...init });
+
+    const response = await fetch(
+      url,
+      init ? mergeConfigs(this.defaults, init) : this.defaults,
+    );
 
     if (!response.ok) {
-      const data = await response.json();
-      throw new HttpRequestError(response, data);
+      if (response.headers.get('content-type')?.includes('application/json')) {
+        const data = await response.json();
+        throw new HttpRequestError(response, data);
+      } else {
+        const data = await response.text();
+
+        throw new HttpRequestError(response, {
+          message: data,
+        });
+      }
     }
 
     const data = await response.json();
