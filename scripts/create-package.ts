@@ -13,6 +13,8 @@ import path from 'node:path';
 
   delete packageParsed.scripts;
   delete packageParsed.devDependencies;
+  delete packageParsed.commitlint;
+  delete packageParsed.config;
 
   const newPackage = JSON.stringify(packageParsed, null, 2);
 

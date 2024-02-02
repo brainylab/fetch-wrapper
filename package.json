@@ -10,7 +10,11 @@
     "test:coverage": "vitest run --coverage && open ./coverage/index.html",
     "build:compile": "tsup ./src/index.ts --dts --format esm,cjs --env.NODE_ENV production",
     "build:packages": "tsx ./scripts/create-package.ts",
-    "build": "pnpm run build:compile && pnpm run build:packages"
+    "build": "pnpm run build:compile && pnpm run build:packages",
+    "commit:add": "git add .",
+    "commit:create": "cz",
+    "commit:push": "git push",
+    "commit": "pnpm commit:add && pnpm commit:create && pnpm commit:push"
   },
   "keywords": [
     "fetch",
@@ -26,13 +30,30 @@
     "url": "https://github.com/brainylab/fetch-wrapper"
   },
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@brainylab/eslint-config": "^1.0.14",
+    "@commitlint/config-conventional": "^18.6.0",
+    "@evilmartians/lefthook": "^1.6.1",
+    "@types/node": "^20.11.16",
+    "commitizen": "^4.3.0",
+    "commitlint": "^18.6.0",
+    "cz-conventional-changelog": "^3.3.0",
     "tsup": "^8.0.1",
     "tsx": "^4.7.0",
     "typescript": "^5.3.3",
-    "vitest": "^1.2.2",
-    "@types/node": "^20.10.7"
+    "vitest": "^1.2.2"
+  },
+  "engines": {
+    "node": ">= 18"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
