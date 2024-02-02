@@ -1,9 +1,14 @@
 import { FetchWrapperProps } from './create-instance';
 import { HttpRequestError } from './http-error';
+import { createPath } from './utils/create-path';
 import { mergeConfigs } from './utils/merge-configs';
+import { objectToUrlParams } from './utils/object-to-url-params';
 
 export type FetchWrapperDefaults = {
   headers: HeadersInit & { Authorization?: string };
+};
+type FetchWrapperInit = RequestInit & {
+  params?: Record<string, string | number>;
 };
 
 type FetchWrapperResponse<T> = {
@@ -14,22 +19,22 @@ type FetchWrapperResponse<T> = {
 
 interface FetchMethods {
   get: <T>(
-    path: string,
-    init?: RequestInit,
+    path: string | string[],
+    init?: FetchWrapperInit,
   ) => Promise<FetchWrapperResponse<T>>;
   post: <T, U>(
-    path: string,
+    path: string | string[],
     body?: T,
-    init?: RequestInit,
+    init?: FetchWrapperInit,
   ) => Promise<FetchWrapperResponse<U>>;
   put: <T, U>(
-    path: string,
+    path: string | string[],
     body: T,
-    init?: RequestInit,
+    init?: FetchWrapperInit,
   ) => Promise<FetchWrapperResponse<U>>;
   delete: <T>(
-    path: string,
-    init?: RequestInit,
+    path: string | string[],
+    init?: FetchWrapperInit,
   ) => Promise<FetchWrapperResponse<T>>;
 }
 
@@ -57,10 +62,16 @@ export class FetchWrapper implements FetchMethods {
   }
 
   async http<T>(
-    path: string,
-    init?: RequestInit,
+    path: string | string[],
+    init?: FetchWrapperInit,
   ): Promise<FetchWrapperResponse<T>> {
-    const url = new URL(path, this.url);
+    const url = new URL(createPath(path), this.url);
+
+    if (init?.params) {
+      const params = objectToUrlParams(init.params);
+
+      url.search = params;
+    }
 
     const response = await fetch(
       url,
@@ -90,21 +101,21 @@ export class FetchWrapper implements FetchMethods {
   }
 
   async get<T>(
-    path: string,
-    init?: RequestInit,
+    path: string | string[],
+    init?: FetchWrapperInit,
   ): Promise<FetchWrapperResponse<T>> {
     const config = {
       method: 'GET',
       ...init,
-    } as RequestInit;
+    } as FetchWrapperInit;
 
     return await this.http<T>(path, config);
   }
 
   async post<T, U = any>(
-    path: string,
+    path: string | string[],
     body?: T,
-    init?: RequestInit,
+    init?: FetchWrapperInit,
   ): Promise<FetchWrapperResponse<U>> {
     const config = {
       method: 'POST',
@@ -116,9 +127,9 @@ export class FetchWrapper implements FetchMethods {
   }
 
   async put<T, U>(
-    path: string,
+    path: string | string[],
     body: T,
-    init?: RequestInit,
+    init?: FetchWrapperInit,
   ): Promise<FetchWrapperResponse<U>> {
     const config = { method: 'PUT', body: JSON.stringify(body), ...init };
 
@@ -126,13 +137,13 @@ export class FetchWrapper implements FetchMethods {
   }
 
   async delete<T>(
-    path: string,
-    init?: RequestInit,
+    path: string | string[],
+    init?: FetchWrapperInit,
   ): Promise<FetchWrapperResponse<T>> {
     const config = {
       method: 'DELETE',
       ...init,
-    } as RequestInit;
+    } as FetchWrapperInit;
 
     return await this.http<T>(path, config);
   }

@@ -24,7 +24,10 @@ jobs:
       - name: Install Packages
         run: corepack enable && pnpm install --frozen-lockfile
       
-      - name: Build Packages
+      - name: Test Package
+        run: pnpm run test
+      
+      - name: Build Package
         run: pnpm run build
 
       - name: Set package registry GRP
@@ -53,8 +56,11 @@ jobs:
       
       - name: Install Packages
         run:  corepack enable && pnpm install --frozen-lockfile
+
+      - name: Test Package
+        run: pnpm run test
       
-      - name: Build Packages
+      - name: Build Package
         run: pnpm run build
 
       - name: Npm registry authentication
