@@ -17,6 +17,7 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
+    "baseUrl": ".",
     "types": ["node", "vitest/globals"],
   },
   "include": ["./src/**/*"],

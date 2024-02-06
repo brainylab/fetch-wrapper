@@ -42,8 +42,8 @@ export class FetchWrapper implements FetchMethods {
   private url: string = 'http://localhost';
   public defaults: FetchWrapperDefaults = {
     headers: {
-      Accept: 'application/json',
-      'Content-type': 'application/json; charset=UTF-8',
+      accept: 'application/json',
+      'content-type': 'application/json',
     },
   };
 
