@@ -21,8 +21,6 @@ describe('error-handling', () => {
     } catch (error) {
       const result = fwprErrorHandling(error);
 
-      console.log(error);
-
       expect(result).toHaveProperty('error');
       expect(result.error).toEqual('CONNECTION_REFUSED');
     }

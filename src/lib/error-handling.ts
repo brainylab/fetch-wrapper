@@ -12,7 +12,6 @@ export type ErrorHandlingResponse = {
 };
 
 export function fwprErrorHandling(error: unknown): ErrorHandlingResponse {
-  console.log(error);
   if (error instanceof HttpRequestError) {
     return {
       status: error.status,
