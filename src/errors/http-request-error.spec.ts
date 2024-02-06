@@ -1,4 +1,4 @@
-import { HttpRequestError } from './http-error';
+import { HttpRequestError } from './http-request-error';
 
 describe('http-request-error', () => {
   it('should be http error', () => {

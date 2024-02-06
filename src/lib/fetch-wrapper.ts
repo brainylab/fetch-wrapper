@@ -1,8 +1,8 @@
-import { FetchWrapperProps } from './create-instance';
-import { HttpRequestError } from './http-error';
-import { createPath } from './utils/create-path';
-import { mergeConfigs } from './utils/merge-configs';
-import { objectToUrlParams } from './utils/object-to-url-params';
+import { HttpRequestError } from '../errors/http-request-error';
+import { createPath } from '../utils/create-path';
+import { mergeConfigs } from '../utils/merge-configs';
+import { objectToUrlParams } from '../utils/object-to-url-params';
+import type { FetchWrapperProps } from './create-instance';
 
 export type FetchWrapperDefaults = {
   headers: HeadersInit & { Authorization?: string };
@@ -17,7 +17,7 @@ type FetchWrapperResponse<T> = {
   data: T;
 };
 
-interface FetchMethods {
+type FetchMethods = {
   get: <T>(
     path: string | string[],
     init?: FetchWrapperInit,
@@ -36,10 +36,10 @@ interface FetchMethods {
     path: string | string[],
     init?: FetchWrapperInit,
   ) => Promise<FetchWrapperResponse<T>>;
-}
+};
 
 export class FetchWrapper implements FetchMethods {
-  private url: string;
+  private url: string = 'http://localhost';
   public defaults: FetchWrapperDefaults = {
     headers: {
       Accept: 'application/json',
@@ -47,16 +47,15 @@ export class FetchWrapper implements FetchMethods {
     },
   };
 
-  constructor({
-    baseUrl = 'http://localhost',
-    defaultConfig,
-  }: FetchWrapperProps) {
-    this.url = baseUrl;
+  constructor(props?: FetchWrapperProps) {
+    if (props?.baseUrl) {
+      this.url = props.baseUrl;
+    }
 
-    if (defaultConfig) {
+    if (props?.defaultConfig) {
       this.defaults = mergeConfigs(
         this.defaults,
-        defaultConfig,
+        props.defaultConfig,
       ) as FetchWrapperDefaults;
     }
   }

@@ -14,8 +14,6 @@ describe('merge-configs', () => {
     const newConfig = { b: 3, c: { b: 5 } };
     const result = mergeConfigs(defaultConfig, newConfig);
 
-    console.log(result);
-
     expect(result).toEqual({
       a: 1,
       b: 3,

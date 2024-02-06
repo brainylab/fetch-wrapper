@@ -1,6 +1,6 @@
 {
   "name": "@brainylab/fetch-wrapper",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "main": "./index.js",
   "module": "./index.mjs",
   "types": "./index.d.ts",
@@ -31,7 +31,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@brainylab/eslint-config": "^1.0.14",
+    "@brainylab/eslint-config": "^1.0.20",
     "@commitlint/config-conventional": "^18.6.0",
     "@evilmartians/lefthook": "^1.6.1",
     "@types/node": "^20.11.16",

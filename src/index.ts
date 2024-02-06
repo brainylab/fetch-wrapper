@@ -1,13 +1,14 @@
-import { create } from './create-instance';
-
-const wrapper = { create };
-
-export { wrapper };
-export default wrapper;
-
-export * from './http-error';
+import fwpr from './fwpr';
 
 /**
  * exports types
  */
-export type { FetchWrapperProps } from './create-instance';
+export type { FetchWrapperProps } from './lib/create-instance';
+
+/**
+ * export lib
+ */
+export * from './errors/http-request-error';
+export * from './lib/error-handling';
+
+export { fwpr as default, fwpr };
