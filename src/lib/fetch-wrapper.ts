@@ -72,10 +72,13 @@ export class FetchWrapper implements FetchMethods {
       url.search = params;
     }
 
-    const response = await fetch(
-      url,
-      init ? mergeConfigs(this.defaults, init) : this.defaults,
-    );
+    const configs = init
+      ? mergeConfigs(this.defaults, init)
+      : (this.defaults as RequestInit);
+
+    if (['GET', 'HEAD'].includes(configs.method)) configs.body = undefined;
+
+    const response = await fetch(url, configs);
 
     if (!response.ok) {
       if (response.headers.get('content-type')?.includes('application/json')) {
