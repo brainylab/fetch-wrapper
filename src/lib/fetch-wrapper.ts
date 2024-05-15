@@ -76,7 +76,8 @@ export class FetchWrapper implements FetchMethods {
       ? mergeConfigs(this.defaults, init)
       : (this.defaults as RequestInit);
 
-    if (['GET', 'HEAD'].includes(configs.method)) configs.body = undefined;
+    if (['GET', 'HEAD', 'DELETE'].includes(configs.method))
+      configs.body = undefined;
 
     const response = await fetch(url, configs);
 
