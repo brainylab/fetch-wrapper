@@ -41,10 +41,7 @@ type FetchMethods = {
 export class FetchWrapper implements FetchMethods {
   private url: string = 'http://localhost';
   public defaults: FetchWrapperDefaults = {
-    headers: {
-      accept: 'application/json',
-      'content-type': 'application/json',
-    },
+    headers: {},
   };
 
   constructor(props?: FetchWrapperProps) {
@@ -62,7 +59,7 @@ export class FetchWrapper implements FetchMethods {
 
   async http<T>(
     path: string | string[],
-    init?: FetchWrapperInit,
+    init: FetchWrapperInit,
   ): Promise<FetchWrapperResponse<T>> {
     const url = new URL(createPath(path), this.url);
 
@@ -75,9 +72,6 @@ export class FetchWrapper implements FetchMethods {
     const configs = init
       ? mergeConfigs(this.defaults, init)
       : (this.defaults as RequestInit);
-
-    if (['GET', 'HEAD', 'DELETE'].includes(configs.method))
-      configs.body = undefined;
 
     const response = await fetch(url, configs);
 
@@ -122,6 +116,9 @@ export class FetchWrapper implements FetchMethods {
   ): Promise<FetchWrapperResponse<U>> {
     const config = {
       method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(body),
       ...init,
     };
@@ -134,7 +131,14 @@ export class FetchWrapper implements FetchMethods {
     body: T,
     init?: FetchWrapperInit,
   ): Promise<FetchWrapperResponse<U>> {
-    const config = { method: 'PUT', body: JSON.stringify(body), ...init };
+    const config = {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+      ...init,
+    };
 
     return await this.http<U>(path, config);
   }
