@@ -22,11 +22,11 @@ jobs:
           node-version: 20
 
       - name: Install Packages
-        run: corepack enable && pnpm install --frozen-lockfile
-      
+        run: corepack enable && pnpm install --no-frozen-lockfile
+
       - name: Test Package
         run: pnpm run test
-      
+
       - name: Build Package
         run: pnpm run build
 
@@ -53,13 +53,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      
+
       - name: Install Packages
-        run:  corepack enable && pnpm install --frozen-lockfile
+        run: corepack enable && pnpm install --no-frozen-lockfile
 
       - name: Test Package
         run: pnpm run test
-      
+
       - name: Build Package
         run: pnpm run build
 
@@ -68,4 +68,3 @@ jobs:
 
       - name: Publish Packages on NPM
         run: cd dist && npm publish --provenance --access public
-
