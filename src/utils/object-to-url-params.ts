@@ -8,16 +8,14 @@ export function objectToUrlParams(
 			if (Array.isArray(obj[key])) {
 				const arr = obj[key] as string[] | number[];
 
-				arr.map((value, index) => {
-					params.append(`${key}[${index}]`, String(value));
+				arr.map((value) => {
+					params.append(`${key}`, String(value));
 				});
 			} else {
 				params.append(key, String(obj[key]));
 			}
 		}
 	});
-
-	console.log(decodeURI(params.toString()));
 
 	return decodeURI(params.toString());
 }
