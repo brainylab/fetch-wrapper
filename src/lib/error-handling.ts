@@ -7,6 +7,7 @@ type FetchTypeError = TypeError & {
 export type ErrorHandlingResponse = {
 	status?: number;
 	message: string;
+	data?: unknown;
 	error: 'HTTP_REQUEST_ERROR' | 'CONNECTION_REFUSED' | 'UNEXPECTED_ERROR';
 	throw?: unknown;
 };
@@ -16,6 +17,7 @@ export function fwprErrorHandling(error: unknown): ErrorHandlingResponse {
 		return {
 			status: error.status,
 			message: error.message,
+			data: error.data,
 			error: 'HTTP_REQUEST_ERROR',
 		};
 	}

@@ -102,9 +102,7 @@ export class FetchWrapper implements FetchMethods {
 				await this.interceptors.response.error(this.response, this.data);
 			}
 
-			throw new HttpRequestError(this.response as Response, {
-				message: this.data,
-			});
+			throw new HttpRequestError(this.response as Response, this.data);
 		}
 
 		const data = await this.response.json();

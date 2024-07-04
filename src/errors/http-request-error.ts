@@ -5,6 +5,7 @@ type DataRequestErrors = {
 export class HttpRequestError extends Error {
 	status: number;
 	message: string;
+	data?: unknown;
 
 	constructor(response: Response, data?: DataRequestErrors) {
 		const { status, statusText } = response;
@@ -14,5 +15,6 @@ export class HttpRequestError extends Error {
 		this.name = 'HttpRequestError';
 		this.status = status;
 		this.message = data?.message || statusText;
+		this.data = data;
 	}
 }
