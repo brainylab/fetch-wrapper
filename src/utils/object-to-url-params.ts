@@ -1,6 +1,6 @@
-type ObjectToUrl = Record<
+export type ObjectToUrl = Record<
 	string,
-	string | number | string[] | number[] | undefined | null
+	string | number | string[] | number[] | boolean | undefined | null
 >;
 
 function cleanObject(obj: ObjectToUrl): ObjectToUrl {

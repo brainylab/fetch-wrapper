@@ -4,6 +4,7 @@ import { createPath } from '../utils/create-path';
 import { mergeConfigs } from '../utils/merge-configs';
 import { objectToUrlParams } from '../utils/object-to-url-params';
 
+import type { ObjectToUrl } from '../utils/object-to-url-params';
 import type { FetchWrapperProps } from './create-instance';
 
 export type FwprInterceptors = {
@@ -17,7 +18,7 @@ export type FetchWrapperDefaults = {
 	interceptors?: FwprInterceptors;
 };
 type FetchWrapperInit = RequestInit & {
-	params?: Record<string, string | number | string[] | number[]>;
+	params?: ObjectToUrl;
 };
 
 type FetchWrapperResponse<T> = {
