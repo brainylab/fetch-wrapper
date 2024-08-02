@@ -1,7 +1,10 @@
-function cleanObject(
-	obj: Record<string, string | number | string[] | number[] | undefined | null>,
-): Record<string, string | number | string[] | number[]> {
-	const cleanedObj: Record<string, string | number | string[] | number[]> = {};
+type ObjectToUrl = Record<
+	string,
+	string | number | string[] | number[] | undefined | null
+>;
+
+function cleanObject(obj: ObjectToUrl): ObjectToUrl {
+	const cleanedObj: ObjectToUrl = {};
 	Object.keys(obj).forEach((key) => {
 		const value = obj[key];
 		if (value !== undefined && value !== null) {
@@ -12,9 +15,7 @@ function cleanObject(
 	return cleanedObj;
 }
 
-export function objectToUrlParams(
-	obj: Record<string, string | number | string[] | number[]>,
-): string {
+export function objectToUrlParams(obj: ObjectToUrl): string {
 	const cleanedObj = cleanObject(obj);
 	const params = new URLSearchParams();
 
