@@ -31,17 +31,20 @@ describe('fetch-wrapper', () => {
 	});
 
 	it('should be able to using hook before request', async () => {
-		api.hooks.beforeRequest = async (config) => {
-			config.headers = { 'x-custom-header': 'custom-value' };
-		};
-
-		const response = await api.get(
-			'https://brasilapi.com.br/api/cep/v2/89010025',
-		);
-
-		expect(response.raw.request.headers).toEqual({
-			'x-custom-header': 'custom-value',
+		const apiInstance = new FetchWrapper({
+			baseUrl: 'https://brasilapi.com.br/',
+			hooks: {
+				beforeRequest: async (request) => {
+					request.headers.set('x-custom-header', 'custom-value');
+				},
+			},
 		});
+
+		const response = await apiInstance.get('/api/cep/v2/89010025');
+
+		expect(response.raw.request.headers.get('x-custom-header')).toEqual(
+			'custom-value',
+		);
 	});
 
 	it('should be able to intercept an HttpRequestError error on a request', async () => {

@@ -16,7 +16,7 @@ type FetchWrapperInit = FetchWrapperConfig & {
 };
 
 export type FwprHooks = {
-	beforeRequest?: (configs: FetchWrapperConfig) => Promise<void>;
+	beforeRequest?: (request: Request) => Promise<void>;
 	beforeError?: (response: Response, data: any) => Promise<void>;
 };
 
@@ -26,7 +26,7 @@ type FetchWrapperResponse<T> = {
 	data: T;
 	raw: {
 		response: Response;
-		request: FetchWrapperConfig & { url: URL };
+		request: Request;
 	};
 };
 
@@ -54,12 +54,14 @@ type FetchMethods = {
 export class FetchWrapper implements FetchMethods {
 	private url: string = 'http://localhost';
 	private data: any = null;
+	private request: Request | null = null;
 	private response: Response | null = null;
-	public defaults: FetchWrapperConfig = {
+	private defaults: FetchWrapperConfig = {
 		headers: {},
 	};
 	public hooks: FwprHooks = {
 		beforeRequest: undefined,
+		beforeError: undefined,
 	};
 
 	constructor(props?: FetchWrapperProps) {
@@ -91,16 +93,23 @@ export class FetchWrapper implements FetchMethods {
 			url.search = params;
 		}
 
+		const configs = init ? mergeConfigs(this.defaults, init) : this.defaults;
+
+		/**
+		 * create a new request instance
+		 */
+		this.request = new Request(url, {
+			...configs,
+		});
+
 		/**
 		 * implement before hook
 		 */
 		if (this.hooks?.beforeRequest) {
-			await this.hooks.beforeRequest(this.defaults);
+			await this.hooks.beforeRequest(this.request);
 		}
 
-		const configs = init ? mergeConfigs(this.defaults, init) : this.defaults;
-
-		this.response = await fetch(url, configs);
+		this.response = await fetch(this.request);
 
 		if (!this.response.ok) {
 			if (
@@ -129,7 +138,7 @@ export class FetchWrapper implements FetchMethods {
 			data,
 			raw: {
 				response: this.response,
-				request: { url: url, ...configs },
+				request: this.request,
 			},
 		};
 	}
