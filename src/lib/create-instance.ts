@@ -1,11 +1,11 @@
 import { FetchWrapper } from './fetch-wrapper';
 
-import type { FetchWrapperDefaults, FwprInterceptors } from './fetch-wrapper';
+import type { FetchWrapperConfig, FwprHooks } from './fetch-wrapper';
 
 export type FetchWrapperProps = {
 	baseUrl?: string;
-	interceptors?: FwprInterceptors;
-	defaultConfig?: FetchWrapperDefaults;
+	hooks?: FwprHooks;
+	defaultConfig?: FetchWrapperConfig;
 };
 
 export function createInstance(defaultConfig?: FetchWrapperProps) {

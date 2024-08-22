@@ -12,24 +12,40 @@ describe('fetch-wrapper', () => {
 	});
 
 	it('should be able to make a GET request', async () => {
-		const response = await api.get('https://api.github.com/orgs/brainylab');
+		const response = await api.get(
+			'https://brasilapi.com.br/api/cep/v2/89010025',
+		);
 
 		expect(response.status).toBe(200);
 		expect(response.statusText).toBe('OK');
 		expect(typeof response.data).toBe('object');
-		expect(response.data).toHaveProperty('id');
+		expect(response.data).toHaveProperty('cep');
 	});
 
 	it('should be able to return an HttpRequestError error on a request', async () => {
 		try {
-			await api.get('https://api.github.com/orgs');
+			await api.get('https://brasilapi.com.br/api/cep/v2');
 		} catch (err) {
 			expect(err).toBeInstanceOf(HttpRequestError);
 		}
 	});
 
+	it('should be able to using hook before request', async () => {
+		api.hooks.beforeRequest = async (config) => {
+			config.headers = { 'x-custom-header': 'custom-value' };
+		};
+
+		const response = await api.get(
+			'https://brasilapi.com.br/api/cep/v2/89010025',
+		);
+
+		expect(response.raw.request.headers).toEqual({
+			'x-custom-header': 'custom-value',
+		});
+	});
+
 	it('should be able to intercept an HttpRequestError error on a request', async () => {
-		api.interceptors.response.error = async () => {
+		api.hooks.beforeError = async () => {
 			throw new Error('intercept error');
 		};
 
