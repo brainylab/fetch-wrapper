@@ -42,7 +42,7 @@ describe('fetch-wrapper', () => {
 
 		const response = await apiInstance.get('/api/cep/v2/89010025');
 
-		expect(response.raw.request.headers.get('x-custom-header')).toEqual(
+		expect(response.request.headers.get('x-custom-header')).toEqual(
 			'custom-value',
 		);
 	});

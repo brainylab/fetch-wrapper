@@ -24,31 +24,29 @@ type FetchWrapperResponse<T> = {
 	status: number;
 	statusText: string;
 	data: T;
-	raw: {
-		response: Response;
-		request: Request;
-	};
+	response: Response;
+	request: Request;
 };
 
 type FetchMethods = {
-	get: <T>(
+	get: <U>(
 		path: string | string[],
 		init?: FetchWrapperInit,
-	) => Promise<FetchWrapperResponse<T>>;
-	post: <T, U>(
+	) => Promise<FetchWrapperResponse<U>>;
+	post: <U = unknown, T = unknown>(
 		path: string | string[],
 		body?: T,
 		init?: FetchWrapperInit,
 	) => Promise<FetchWrapperResponse<U>>;
-	put: <T, U>(
+	put: <U = unknown, T = unknown>(
 		path: string | string[],
 		body: T,
 		init?: FetchWrapperInit,
 	) => Promise<FetchWrapperResponse<U>>;
-	delete: <T>(
+	delete: <U>(
 		path: string | string[],
 		init?: FetchWrapperInit,
-	) => Promise<FetchWrapperResponse<T>>;
+	) => Promise<FetchWrapperResponse<U>>;
 };
 
 export class FetchWrapper implements FetchMethods {
@@ -98,9 +96,7 @@ export class FetchWrapper implements FetchMethods {
 		/**
 		 * create a new request instance
 		 */
-		this.request = new Request(url, {
-			...configs,
-		});
+		this.request = new Request(url, configs);
 
 		/**
 		 * implement before hook
@@ -130,16 +126,12 @@ export class FetchWrapper implements FetchMethods {
 			throw new HttpRequestError(this.response as Response, this.data);
 		}
 
-		const data = await this.response.json();
-
 		return {
 			status: this.response.status,
 			statusText: this.response.statusText,
-			data,
-			raw: {
-				response: this.response,
-				request: this.request,
-			},
+			data: this.data as T,
+			response: this.response,
+			request: this.request,
 		};
 	}
 
