@@ -1,9 +1,10 @@
-import { HttpRequestError } from 'src/errors/http-request-error';
-
+import { prepareResponseData } from '../utils/prepare-response-data';
 import { createPath } from '../utils/create-path';
 import { mergeConfigs } from '../utils/merge-configs';
 import { objectToUrlParams } from '../utils/object-to-url-params';
+import { HttpRequestError } from '../errors/http-request-error';
 
+import type { DataRequestErrors } from '../errors/http-request-error';
 import type { ObjectToUrl } from '../utils/object-to-url-params';
 import type { FetchWrapperProps } from './create-instance';
 
@@ -17,7 +18,7 @@ type FetchWrapperInit = FetchWrapperConfig & {
 
 export type FwprHooks = {
 	beforeRequest?: (request: Request) => Promise<void>;
-	beforeError?: (response: Response, data: any) => Promise<void>;
+	beforeError?: (response: Response, data: unknown) => Promise<void>;
 };
 
 type FetchWrapperResponse<T> = {
@@ -51,10 +52,7 @@ type FetchMethods = {
 
 export class FetchWrapper implements FetchMethods {
 	private url: string = 'http://localhost';
-	private data: any = null;
-	private request: Request | null = null;
-	private response: Response | null = null;
-	private defaults: FetchWrapperConfig = {
+	private configs: FetchWrapperConfig = {
 		headers: {},
 	};
 	public hooks: FwprHooks = {
@@ -68,8 +66,8 @@ export class FetchWrapper implements FetchMethods {
 		}
 
 		if (props?.defaultConfig) {
-			this.defaults = mergeConfigs(
-				this.defaults,
+			this.configs = mergeConfigs(
+				this.configs,
 				props.defaultConfig,
 			) as FetchWrapperConfig;
 		}
@@ -79,7 +77,7 @@ export class FetchWrapper implements FetchMethods {
 		}
 	}
 
-	async http<T>(
+	protected async http<T>(
 		path: string | string[],
 		init: FetchWrapperInit,
 	): Promise<FetchWrapperResponse<T>> {
@@ -91,63 +89,59 @@ export class FetchWrapper implements FetchMethods {
 			url.search = params;
 		}
 
-		const configs = init ? mergeConfigs(this.defaults, init) : this.defaults;
+		const configs = init ? mergeConfigs(this.configs, init) : this.configs;
 
 		/**
 		 * create a new request instance
 		 */
-		this.request = new Request(url, configs);
+		const request = new globalThis.Request(url, configs);
 
 		/**
 		 * implement before hook
 		 */
 		if (this.hooks?.beforeRequest) {
-			await this.hooks.beforeRequest(this.request);
+			await this.hooks.beforeRequest(request);
 		}
 
-		this.response = await fetch(this.request);
+		const response = await fetch(request);
 
-		if (!this.response.ok) {
-			if (
-				this.response.headers.get('content-type')?.includes('application/json')
-			) {
-				this.data = await this.response.json();
-			} else {
-				this.data = await this.response.text();
-			}
+		if (!response.ok) {
+			const data = await prepareResponseData<DataRequestErrors>(response);
 
 			/**
 			 * implement beforeError hook
 			 */
 			if (this.hooks?.beforeError) {
-				await this.hooks.beforeError(this.response, this.data);
+				await this.hooks.beforeError(response, data);
 			}
 
-			throw new HttpRequestError(this.response as Response, this.data);
+			throw new HttpRequestError(response as Response, data);
 		}
 
+		const data = await prepareResponseData(response);
+
 		return {
-			status: this.response.status,
-			statusText: this.response.statusText,
-			data: this.data as T,
-			response: this.response,
-			request: this.request,
+			status: response.status,
+			statusText: response.statusText,
+			data: data as T,
+			response: response,
+			request: request,
 		};
 	}
 
-	async get<T>(
+	async get<U>(
 		path: string | string[],
 		init?: FetchWrapperInit,
-	): Promise<FetchWrapperResponse<T>> {
+	): Promise<FetchWrapperResponse<U>> {
 		const config = {
 			method: 'GET',
 			...init,
 		} as FetchWrapperInit;
 
-		return await this.http<T>(path, config);
+		return await this.http<U>(path, config);
 	}
 
-	async post<T, U = any>(
+	async post<U = unknown, T = unknown>(
 		path: string | string[],
 		body?: T,
 		init?: FetchWrapperInit,
@@ -164,7 +158,7 @@ export class FetchWrapper implements FetchMethods {
 		return await this.http<U>(path, config);
 	}
 
-	async put<T, U>(
+	async put<U = unknown, T = unknown>(
 		path: string | string[],
 		body: T,
 		init?: FetchWrapperInit,
@@ -181,15 +175,15 @@ export class FetchWrapper implements FetchMethods {
 		return await this.http<U>(path, config);
 	}
 
-	async delete<T>(
+	async delete<U>(
 		path: string | string[],
 		init?: FetchWrapperInit,
-	): Promise<FetchWrapperResponse<T>> {
+	): Promise<FetchWrapperResponse<U>> {
 		const config = {
 			method: 'DELETE',
 			...init,
 		} as FetchWrapperInit;
 
-		return await this.http<T>(path, config);
+		return await this.http<U>(path, config);
 	}
 }

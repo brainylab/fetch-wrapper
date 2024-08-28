@@ -1,4 +1,4 @@
-type DataRequestErrors = {
+export type DataRequestErrors = {
 	message: string;
 };
 

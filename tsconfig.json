@@ -20,6 +20,6 @@
 		"baseUrl": ".",
 		"types": ["node", "vitest/globals"]
 	},
-	"include": ["./src/**/*", "teste.ts"],
+	"include": ["./src/**/*"],
 	"exclude": ["node_modules"]
 }

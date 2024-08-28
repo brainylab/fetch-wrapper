@@ -1,5 +1,4 @@
-import { HttpRequestError } from 'src/errors/http-request-error';
-
+import { HttpRequestError } from '../errors/http-request-error';
 import { fwprErrorHandling } from '../lib/error-handling';
 
 import { FetchWrapper } from './fetch-wrapper';
